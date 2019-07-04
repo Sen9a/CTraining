@@ -15,20 +15,20 @@ int vowels_counter(istream& words, bool file){
         if (!file && user_input == "q"){
             break;
         }else if (found!=string::npos){
-            vowels_count++;
+            ++vowels_count;
         }else if(isalpha(user_input[0])){
-            not_vowels++;
+            ++not_vowels;
         }else {
-            others++;
+            ++others;
         }
     }
     cout << "Vowels count: " << vowels_count << endl;
     cout << "Not vowels: " << not_vowels << endl;
     cout << "Others: "<< others << endl;
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-int read_from_file(string& file){
+int read_from_file(const string& file){
     ifstream open_file(file);
     if (!open_file){
         cout << "File do not exists"<< endl;
@@ -42,7 +42,7 @@ int main(int args, char **argv){
        cout << "Enter laters (q to exit): ";
        return vowels_counter(cin, false);
    }else if (args == 2){
-       return read_from_file(reinterpret_cast<string &>(argv[1]));
+       return read_from_file(argv[1]);
    }
    return EXIT_FAILURE;
 }
