@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include <climits>
 #include <list>
-#include <bits/unordered_set.h>
 
 
 struct edge {
@@ -26,23 +25,20 @@ struct table {
 
 std::unordered_set<int> gather_node_indices(const std::vector<edge> &all_data){
     std::unordered_set<int> values;
-    for(auto i : all_data){
-        values.insert(i.start_node);
-    }
+    std::transform(all_data.cbegin(), all_data.cend(),
+                   std::inserter(values, values.end()),
+                   [](const auto& node) { return node.start_node; });
     return values;
 }
 
-std::vector<table> create_table_from_file(const std::unordered_set<int> &set_of_values, int start_node){
+std::vector<table> create_table_from_file(const std::unordered_set<int> &set_of_values,int start_node){
     std::vector<table> result_table = {};
-    table row = {};
-    for (auto i : set_of_values) {
-        if (i == start_node) {
-            row = {i, 0, std::numeric_limits<int>::max()};
-        } else {
-            row = {i, std::numeric_limits<int>::max(), std::numeric_limits<int>::max()};
-        }
-        result_table.push_back(row);
-    }
+    std::transform(set_of_values.cbegin(), set_of_values.cend(),
+                   std::back_inserter(result_table),
+                   [start_node](const auto& row){table a = {row,0, std::numeric_limits<int>::max()};
+                                                 table b = {row,  std::numeric_limits<int>::max(),
+                                                            std::numeric_limits<int>::max()};
+                   return (start_node == row)?a:b;});
     return result_table;
 }
 
@@ -73,10 +69,10 @@ bool min_value_condition(const std::vector<int> &list_of_visited_nodes,const tab
 table find_min_vector(const std::vector<int> &list_of_visited_nodes,const std::vector<table> &main_table){
     table min_value_node = {};
     int min_value = std::numeric_limits<int>::max();
-    for(auto i:main_table){
-        if (min_value_condition(list_of_visited_nodes, i, min_value)){
-            min_value = i.distance;
-            min_value_node = i;
+    for(auto &table_entry:main_table){
+        if (min_value_condition(list_of_visited_nodes, table_entry, min_value)){
+            min_value = table_entry.distance;
+            min_value_node = table_entry;
         }
     }
     return min_value_node;
@@ -96,11 +92,11 @@ void set_values_to_table(table current_node,
                          const std::vector<edge> &graph,
                          std::vector<table> &main_table,
                          const std::vector<int> &visited){
-    for(auto &i : graph){
-        for(auto &j : main_table){
-            if(check_if_make_changes_to_main_column(i,j,current_node,visited)){
-                j.distance = i.distance + current_node.distance;
-                j.previos_vector = i.start_node;
+    for(const auto &graph_entry : graph){
+        for(auto &table_entry : main_table){
+            if(check_if_make_changes_to_main_column(graph_entry,table_entry,current_node,visited)){
+                table_entry.distance = graph_entry.distance + current_node.distance;
+                table_entry.previos_vector = graph_entry.start_node;
             }
         }
     }
@@ -149,7 +145,7 @@ int check_input(const std::unordered_set<int> &set_of_values, const std::string&
     int node = 0;
     while (std::cout << prompt){
         if (std::cin>>node){
-            std::unordered_set<int>::const_iterator it = set_of_values.find(node);
+            const auto it = set_of_values.find(node);
             if(it != set_of_values.end()){
                 return node;
             }else{
@@ -171,12 +167,12 @@ int main(int args, char **argv){
         if (graph.empty()){
             return EXIT_FAILURE;
         }
-        std::unordered_set<int> set_of_values = gather_node_indices(graph);
+        auto set_of_values = gather_node_indices(graph);
         int start_node = check_input(set_of_values, "Start node: ");
         int end_node = check_input(set_of_values, "End Node: ");
         auto result_table = create_table_from_file(set_of_values, start_node);
         table first_element = fill_up_result_table(set_of_values, result_table, graph);
-        std::list<table> finish = shortest_path(first_element, result_table, start_node, end_node);
+        auto finish = shortest_path(first_element, result_table, start_node, end_node);
         for(auto node_number: finish){
             if(finish.back().vertex != node_number.vertex) {
                 std::cout << node_number.vertex << "-->";
