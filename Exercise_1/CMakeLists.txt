@@ -4,4 +4,4 @@ project(CTraining)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(CTraining
-        Exercise_1/main.cpp)
+        main.cpp)
