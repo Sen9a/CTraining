@@ -7,20 +7,21 @@
 #include "Exam.h"
 #include "Teacher.h"
 #include "Student.h"
+#include <memory>
 
 
 
 template<class T>
-void fill_up_container(std::istringstream &iss, std::vector<std::pair<int, IRecord*>> &container){
-    IRecord* inst = new T(iss);
+void fill_up_container(std::istringstream &iss, std::vector<std::pair<int, std::shared_ptr<IRecord>>> &container){
+    std::shared_ptr<IRecord> inst = std::make_shared<T>(iss);
     container.emplace_back(inst->getId(),inst);
 }
 
 void make_containers(std::ifstream &file,
-                     std::vector<std::pair<int, IRecord*>> &cource_vector,
-                     std::vector<std::pair<int, IRecord*>> &exam_vector,
-                     std::vector<std::pair<int, IRecord*>> &teacher_vector,
-                     std::vector<std::pair<int, IRecord*>> &student_vector){
+                     std::vector<std::pair<int, std::shared_ptr<IRecord>>> &cource_vector,
+                     std::vector<std::pair<int, std::shared_ptr<IRecord>>> &exam_vector,
+                     std::vector<std::pair<int, std::shared_ptr<IRecord>>> &teacher_vector,
+                     std::vector<std::pair<int, std::shared_ptr<IRecord>>> &student_vector){
     std::string row;
     char separator = ' ';
     while(std::getline(file, row)){
@@ -44,7 +45,7 @@ void make_containers(std::ifstream &file,
 }
 
 
-int write_data_to_file(const std::string &file, std::vector<std::pair<int, IRecord*>>  &container){
+int write_data_to_file(const std::string &file, std::vector<std::pair<int, std::shared_ptr<IRecord>>>  &container){
     std::ofstream open_file(file);
     if(!open_file){
         std::cout << "Can`t create file" << std::endl;
@@ -68,14 +69,12 @@ std::ifstream read_from_file(const std::string &file) {
 }
 
 
-
-
 int main(int args, char **argv){
     if(args==2) {
-        std::vector<std::pair<int, IRecord*>> cource_vector;
-        std::vector<std::pair<int, IRecord*>> exam_vector;
-        std::vector<std::pair<int, IRecord*>> teacher_vector;
-        std::vector<std::pair<int, IRecord*>> student_vector;
+        std::vector<std::pair<int, std::shared_ptr<IRecord>>> cource_vector;
+        std::vector<std::pair<int, std::shared_ptr<IRecord>>> exam_vector;
+        std::vector<std::pair<int, std::shared_ptr<IRecord>>> teacher_vector;
+        std::vector<std::pair<int, std::shared_ptr<IRecord>>> student_vector;
         std::ifstream file = read_from_file(argv[1]);
         if (!file) {
             std::cout << "File do not exists" << std::endl;
