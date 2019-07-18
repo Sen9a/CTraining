@@ -9,11 +9,11 @@ Student::Student(std::istringstream &m_string) {
 }
 
 std::string Student::getName() const {
-    return this->m_name;
+    return m_name;
 }
 
 int Student::getId() const {
-    return this->m_id;
+    return m_id;
 }
 
 std::string Student::getFormatted() const {

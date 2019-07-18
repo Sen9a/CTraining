@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IPersone.h"
+#include "IPerson.h"
 #include "IRecord.h"
+#include <string>
 
-
-class Student : public IPerson,IRecord{
+class Student : public IPerson,public IRecord{
 private:
     int m_id;
     std::string m_name;

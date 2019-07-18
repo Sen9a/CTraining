@@ -9,11 +9,11 @@ Teacher::Teacher(std::istringstream &m_string) {
 }
 
 int Teacher::getId() const {
-    return this->m_id;
+    return m_id;
 }
 
 std::string Teacher::getName() const {
-    return this->m_name;
+    return m_name;
 }
 
 std::string Teacher::getFormatted() const {
