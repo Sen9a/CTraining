@@ -2,7 +2,6 @@
 
 #include "IPerson.h"
 #include "IRecord.h"
-#include "ICommand.h"
 #include <string>
 
 class Teacher : public IPerson, public IRecord{
@@ -14,7 +13,7 @@ public:
     Teacher(std::istringstream &m_string) ;
     std::string getName() const override ;
     std::string getFormatted() const override ;
-    virtual std::string getPrettyPrinted() const override ;
+    std::string getPrettyPrinted() const override ;
     int getId() const override ;
 };
 

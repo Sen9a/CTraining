@@ -1,13 +1,14 @@
 #include "Show.h"
 #include <iostream>
 
-Show::Show(std::vector<std::pair<std::string, std::vector<std::pair<int, std::unique_ptr<IRecord>>>>>  &container):
-show_container(container){}
+
+Show::Show(TableContainer tables):
+show_container(tables){}
 
 void Show::execute() {
-    for (auto &i:this->show_container){
+    for (const auto &i:this->show_container){
         std::cout<<i.first<<std::endl;
-        for (auto &j: i.second){
+        for (const auto &j: i.second.get()){
             std::cout<<j.second->getPrettyPrinted()<<std::endl;
         }
         std::cout << std::endl;

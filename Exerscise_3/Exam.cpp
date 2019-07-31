@@ -1,6 +1,5 @@
 #include "Exam.h"
 #include <sstream>
-#include <iostream>
 
 Exam::Exam(std::istringstream &m_string) {
     m_string>>this->m_id>>this->m_cource_id>>this->m_student_id>>this->result;

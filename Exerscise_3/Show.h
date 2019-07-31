@@ -3,13 +3,17 @@
 #include "ICommand.h"
 #include "IRecord.h"
 #include <string>
-#include <vector>
-#include <memory>
+#include "map"
+#include "memory"
+
+using Table = std::map<int, std::unique_ptr<IRecord>>;
+using TableContainer = std::map<std::string, std::reference_wrapper<const Table>>;
+
 
 class Show: public ICommand {
+private:
+    TableContainer show_container;
 public:
-    std::vector<std::pair<std::string, std::vector<std::pair<int, std::unique_ptr<IRecord>>>>>  &show_container;
-public:
-    Show(std::vector<std::pair<std::string, std::vector<std::pair<int, std::unique_ptr<IRecord>>>>>  &container);
-    void execute() override ;
+    Show(TableContainer tables);
+    void execute() override;
 };

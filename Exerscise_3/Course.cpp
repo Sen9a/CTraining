@@ -1,6 +1,5 @@
 #include "Course.h"
 #include <sstream>
-#include <iostream>
 
 int Course::getId() const {
     return m_id;

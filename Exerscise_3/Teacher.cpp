@@ -1,6 +1,5 @@
 #include "Teacher.h"
 #include <sstream>
-#include <iostream>
 
 Teacher::Teacher(std::istringstream &m_string) {
     m_string>>this->m_id>>this->m_name;

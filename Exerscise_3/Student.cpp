@@ -1,6 +1,5 @@
 #include "Student.h"
 #include <sstream>
-#include <iostream>
 
 Student::Student(std::istringstream &m_string) {
     m_string>>this->m_id>>this->m_name;

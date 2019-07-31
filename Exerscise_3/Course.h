@@ -1,6 +1,5 @@
 #pragma once
 #include "IRecord.h"
-#include "ICommand.h"
 #include <string>
 
 class Course : public IRecord{
@@ -13,7 +12,7 @@ private:
 public:
     Course(std::istringstream &m_string);
     int getId() const override ;
-    virtual std::string getPrettyPrinted() const override ;
+    std::string getPrettyPrinted() const override ;
     std::string getFormatted() const override ;
 };
 
