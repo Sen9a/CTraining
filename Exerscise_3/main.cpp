@@ -69,6 +69,26 @@ std::ifstream read_from_file(const std::string &file) {
     return open_file;
 }
 
+int sort_data_to_file(std::map<int, std::unique_ptr<IRecord>> &cource_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &exam_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &teacher_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &student_vector)
+{
+    if (write_data_to_file("../Exam.txt", exam_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Cource.txt", cource_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Student.txt", student_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Teacher.txt", teacher_vector)) {
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
 
 int main(int args, char **argv){
     std::vector<std::string> arguments(argv + 1, argv + args);
@@ -84,35 +104,25 @@ int main(int args, char **argv){
         }
         try {
             make_containers(file, cource_vector, exam_vector, teacher_vector, student_vector);
+            if (arguments.size() == 1) {
+                if (sort_data_to_file(cource_vector, exam_vector, teacher_vector, student_vector)) {
+                    return EXIT_FAILURE;
+                } else {
+                    return EXIT_SUCCESS;
+                }
+            } else if (arguments.size() > 1) {
+                CommandParser command(student_vector, cource_vector, exam_vector, teacher_vector);
+                command.parse(arguments)->execute();
+                return EXIT_SUCCESS;
+            } else {
+                std::cout << "Bad command" << std::endl;
+                return EXIT_FAILURE;
+            }
         } catch (std::invalid_argument &ia) {
             std::cerr << ia.what() << std::endl;
             return EXIT_FAILURE;
-        }
-        if (arguments.size() == 1) {
-            if (write_data_to_file("../Exam.txt", exam_vector)) {
-                return EXIT_FAILURE;
-            }
-            if (write_data_to_file("../Cource.txt", cource_vector)) {
-                return EXIT_FAILURE;
-            }
-            if (write_data_to_file("../Student.txt", student_vector)) {
-                return EXIT_FAILURE;
-            }
-            if (write_data_to_file("../Teacher.txt", teacher_vector)) {
-                return EXIT_FAILURE;
-            }
-            return EXIT_SUCCESS;
-        } else if (arguments.size() > 1) {
-            CommandParser command(student_vector,cource_vector,exam_vector,teacher_vector);
-            try{
-                command.parse(arguments)->execute();
-            }catch (std::bad_alloc& ba){
-                std::cerr << "bad_alloc caught: " << ba.what() << std::endl;
-                return EXIT_FAILURE;
-             }
-            return EXIT_SUCCESS;
-        }else{
-            std::cout<<"Bad command"<<std::endl;
+        } catch (std::bad_alloc &ba) {
+            std::cerr << "bad_alloc caught: " << ba.what() << std::endl;
             return EXIT_FAILURE;
         }
     }

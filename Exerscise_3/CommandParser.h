@@ -9,7 +9,7 @@ class CommandParser
 {
 public:
     TableContainer container;
-    Table &student, &course, &exam, &teacher;
+    const Table &student, &course, &exam, &teacher;
 public:
     CommandParser(Table &student, Table &course, Table &exam, Table &teacher);
     std::unique_ptr<ICommand> parse(std::vector<std::string> arguments);
