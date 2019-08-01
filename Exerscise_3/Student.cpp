@@ -21,3 +21,8 @@ std::string Student::getFormatted() const {
     formated_string += this->m_name;
     return formated_string;
 }
+
+std::string Student::getPrettyPrinted() const {
+    std::string output = std::string("ID: ")+std::to_string(this->m_id)+", Name: "+this->m_name;
+    return output;
+}

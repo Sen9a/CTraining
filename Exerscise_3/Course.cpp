@@ -19,3 +19,8 @@ Course::Course(std::istringstream &m_string) {
     }
 }
 
+std::string Course::getPrettyPrinted() const {
+    std::string output = std::string("ID: ") + std::to_string(this->m_id) + ", Name: " + this->m_name+", ";
+    output += "TeachersID: " + std::to_string(this->m_teacher_id);
+    return output;
+}

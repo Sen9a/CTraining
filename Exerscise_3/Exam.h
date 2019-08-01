@@ -11,6 +11,7 @@ private:
 public:
     Exam(std::istringstream &m_string);
     int getId() const override ;
+    std::string getPrettyPrinted() const override ;
     std::string getFormatted() const override ;
 };
 

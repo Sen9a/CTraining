@@ -3,6 +3,7 @@
 #include "IPerson.h"
 #include "IRecord.h"
 #include <string>
+#include <vector>
 
 class Student : public IPerson,public IRecord{
 private:
@@ -13,6 +14,7 @@ public:
     Student(std::istringstream &m_string);
     std::string getName() const override ;
     std::string getFormatted() const override ;
+    std::string getPrettyPrinted() const override ;
     int getId() const override ;
 };
 

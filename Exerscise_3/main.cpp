@@ -7,21 +7,23 @@
 #include "Exam.h"
 #include "Teacher.h"
 #include "Student.h"
+#include "Show.h"
+#include "CommandParser.h"
 #include <memory>
-
+#include <map>
 
 
 template<class T>
-void fill_up_container(std::istringstream &iss, std::vector<std::pair<int, std::unique_ptr<IRecord>>> &container){
+void fill_up_container(std::istringstream &iss, std::map<int, std::unique_ptr<IRecord>> &container){
     std::unique_ptr<IRecord> inst = std::make_unique<T>(iss);
-    container.emplace_back(inst->getId(),std::move(inst));
+    container.insert(std::pair<int, std::unique_ptr<IRecord>>(inst->getId(),std::move(inst)));
 }
 
 void make_containers(std::ifstream &file,
-                     std::vector<std::pair<int, std::unique_ptr<IRecord>>> &cource_vector,
-                     std::vector<std::pair<int, std::unique_ptr<IRecord>>> &exam_vector,
-                     std::vector<std::pair<int, std::unique_ptr<IRecord>>> &teacher_vector,
-                     std::vector<std::pair<int, std::unique_ptr<IRecord>>> &student_vector){
+                     std::map<int, std::unique_ptr<IRecord>> &cource_vector,
+                     std::map<int, std::unique_ptr<IRecord>> &exam_vector,
+                     std::map<int, std::unique_ptr<IRecord>> &teacher_vector,
+                     std::map<int, std::unique_ptr<IRecord>> &student_vector){
     std::string row;
     char separator = ' ';
     while(std::getline(file, row)){
@@ -45,13 +47,12 @@ void make_containers(std::ifstream &file,
 }
 
 
-int write_data_to_file(const std::string &file, std::vector<std::pair<int, std::unique_ptr<IRecord>>>  &container){
+int write_data_to_file(const std::string &file, std::map<int, std::unique_ptr<IRecord>>  &container){
     std::ofstream open_file(file);
     if(!open_file){
         std::cout << "Can`t create file" << std::endl;
         return EXIT_FAILURE;
     }
-    sort(container.begin(), container.end());
     try {
         for(auto &iter : container){
             open_file<<iter.second->getFormatted()<<std::endl;
@@ -68,37 +69,62 @@ std::ifstream read_from_file(const std::string &file) {
     return open_file;
 }
 
+int sort_data_to_file(std::map<int, std::unique_ptr<IRecord>> &cource_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &exam_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &teacher_vector,
+                      std::map<int, std::unique_ptr<IRecord>> &student_vector)
+{
+    if (write_data_to_file("../Exam.txt", exam_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Cource.txt", cource_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Student.txt", student_vector)) {
+        return EXIT_FAILURE;
+    }
+    if (write_data_to_file("../Teacher.txt", teacher_vector)) {
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
 
 int main(int args, char **argv){
-    if(args==2) {
-        std::vector<std::pair<int, std::unique_ptr<IRecord>>> cource_vector;
-        std::vector<std::pair<int, std::unique_ptr<IRecord>>> exam_vector;
-        std::vector<std::pair<int, std::unique_ptr<IRecord>>> teacher_vector;
-        std::vector<std::pair<int, std::unique_ptr<IRecord>>> student_vector;
-        std::ifstream file = read_from_file(argv[1]);
+    std::vector<std::string> arguments(argv + 1, argv + args);
+    if(arguments.size()>=1) {
+        std::map<int, std::unique_ptr<IRecord>> cource_vector;
+        std::map<int, std::unique_ptr<IRecord>> exam_vector;
+        std::map<int, std::unique_ptr<IRecord>> teacher_vector;
+        std::map<int, std::unique_ptr<IRecord>> student_vector;
+        std::ifstream file = read_from_file(arguments[0]);
         if (!file) {
             std::cout << "File do not exists" << std::endl;
             return EXIT_FAILURE;
         }
         try {
             make_containers(file, cource_vector, exam_vector, teacher_vector, student_vector);
+            if (arguments.size() == 1) {
+                if (sort_data_to_file(cource_vector, exam_vector, teacher_vector, student_vector)) {
+                    return EXIT_FAILURE;
+                } else {
+                    return EXIT_SUCCESS;
+                }
+            } else if (arguments.size() > 1) {
+                CommandParser command(student_vector, cource_vector, exam_vector, teacher_vector);
+                command.parse(arguments)->execute();
+                return EXIT_SUCCESS;
+            } else {
+                std::cout << "Bad command" << std::endl;
+                return EXIT_FAILURE;
+            }
         } catch (std::invalid_argument &ia) {
             std::cerr << ia.what() << std::endl;
             return EXIT_FAILURE;
-        }
-        if (write_data_to_file("../Exam.txt", exam_vector)) {
+        } catch (std::bad_alloc &ba) {
+            std::cerr << "bad_alloc caught: " << ba.what() << std::endl;
             return EXIT_FAILURE;
         }
-        if (write_data_to_file("../Cource.txt", cource_vector)) {
-            return EXIT_FAILURE;
-        }
-        if (write_data_to_file("../Student.txt", student_vector)) {
-            return EXIT_FAILURE;
-        }
-        if (write_data_to_file("../Teacher.txt", teacher_vector)) {
-            return EXIT_FAILURE;
-        }
-        return EXIT_SUCCESS;
     }
     std::cout << "Please give path to the file as 1 parameter"<<std::endl;
     return EXIT_FAILURE;
